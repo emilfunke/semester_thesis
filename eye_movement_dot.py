@@ -36,4 +36,5 @@ while True:
     screen.update()
     print(move.pos())
     move.forward(2)
+    move.speed(5)
 
