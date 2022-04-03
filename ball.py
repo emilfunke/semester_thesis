@@ -1,29 +1,79 @@
-import pygame
+import turtle
+import time
 from screeninfo import get_monitors
 
+mode = input("Please choose the ball moving mode: ")
+# mode 1 --> outline screen
+# mode 2 --> circle
+# mode 3 --> cross
+wait_time = 2
+
+time.sleep(wait_time)
+
+screen = turtle.Screen()
 for m in get_monitors():
     height = m.height
     width = m.width
+screen.setup(width=width, height=height)
+screen.bgcolor('black')
 
-pygame.init()
-window = pygame.display.set_mode((width - 5, height - 100))
-pygame.display.set_caption("Ball moving")
+ball = turtle.Turtle()
+ball.color('yellow')
+ball.pensize(10)
+ball.speed(2)
+ball.shapesize(3)
+ball.shape('circle')
 
-#global
-ballx = 50
-bally = 50
-ballW = 30
-ballH = 30
+
+def ball_reset():
+    ball.color('yellow')
+    ball.speed(2)
+    ball.shapesize(3)
+    ball.shape('circle')
+
 
 running = True
 while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
+    screen_width = screen.window_width() * 0.9
+    screen_height = screen.window_height() * 0.9
 
-    pygame.draw.circle(window, 'yellow', (ballx, bally), ballW, 0)
-    pygame.display.flip()
+    # outline screen
+    if mode == '1':
+        ball.penup()
+        ball.goto(-screen_width / 2, screen_height / 2)
+        ball.forward(screen_width)
+        ball.right(90)
+        ball.forward(screen_height)
+        ball.right(90)
+        ball.forward(screen_width)
+        ball.right(90)
+        ball.forward(screen_height)
+        mode = input("new mode or stop: ")
+        ball_reset()
 
+    # circle
+    elif mode == '2':
+        ball.penup()
+        ball.goto(0, -screen_height / 2)
+        ball.circle(screen_height / 2)
+        mode = input("new mode or stop: ")
+        ball_reset()
 
-pygame.display.quit()
-pygame.quit()
+    # cross
+    elif mode == '3':
+        ball.penup()
+        ball.goto(-screen_width / 2, screen_height / 2)
+        ball.forward(screen_width)
+        ball.goto(-screen_width / 2, -screen_height / 2)
+        ball.forward(screen_width)
+        ball.goto(0, 0)
+        mode = input("new mode or stop: ")
+        ball_reset()
+
+    # stop
+    elif mode == 'stop':
+        running = False
+
+    # wrong number and not stop
+    else:
+        mode = input("Please enter a number between within 1 and 3: ")
