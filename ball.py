@@ -6,7 +6,7 @@ mode = input("Please choose the ball moving mode: ")
 # mode 1 --> outline screen
 # mode 2 --> circle
 # mode 3 --> cross
-wait_time = 2
+wait_time = 5
 
 time.sleep(wait_time)
 
@@ -14,7 +14,7 @@ screen = turtle.Screen()
 for m in get_monitors():
     height = m.height
     width = m.width
-screen.setup(width=width, height=height)
+screen.setup(width=3*width/4, height=3*height/4)
 screen.bgcolor('black')
 
 ball = turtle.Turtle()
@@ -22,7 +22,7 @@ ball.color('yellow')
 ball.pensize(10)
 ball.speed(2)
 ball.shapesize(3)
-ball.shape('circle')
+
 
 
 def ball_reset():
