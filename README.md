@@ -1,7 +1,7 @@
 # semester_thesis
-First a little program which draws a ball on the screen for the eyes to follow used during the data collection.
+Using matplotlib animations ball_matplot.py lets the user choose between 3 different modes of a ball or line moving on the screen.
 
-ball.py lets the user choose from 3 different programs the yellow ball on the black screen can follow. The different
-programs can be run almost seamlessly after one another.
+The x, y and time data of the moving object is saved to a csv file named according to the chosen mode. This data is then
+used together with the image and optical flow data to build a dataset for the gaze estimation.
 
-python packages time, screeninfo and turtle used
+used packages: matplotlib, csv, time, screeninfo, datetime, itertools, numpy
