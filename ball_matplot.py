@@ -69,6 +69,21 @@ def rect():
     for i in range(130):
         x_d.append(-800 + i * 10)
         y_d.append(500)
+    for i in range(100):
+        x_d.append(500 - i * 10)
+        y_d.append(500 - i * 10)
+    for i in range(100):
+        x_d.append(-500)
+        y_d.append(-500 + i * 10)
+    for i in range(100):
+        x_d.append(-500 + i * 10)
+        y_d.append(500)
+    for i in range(100):
+        x_d.append(500)
+        y_d.append(500 - i * 10)
+    for i in range(100):
+        x_d.append(500 - i * 10)
+        y_d.append(-500)
     return x_d, y_d
 
 
