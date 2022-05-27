@@ -129,7 +129,7 @@ elif mode == "3":
     anim = animation.FuncAnimation(fig, animate_circle, interval=0, blit=True, repeat=False,
                                    frames=np.linspace(0, 4 * np.pi + 1, 1440, endpoint=False))
 else:
-    print("fuck you start new")
+    print("fuck you start new ")
 
 manager = plt.get_current_fig_manager()
 manager.window.state('zoomed')
