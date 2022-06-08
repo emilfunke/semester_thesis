@@ -148,7 +148,7 @@ if mode == "1":
 if mode == "2":
     temp = [x_data, y_data, time_data]
     exp_data = zip_longest(*temp, fillvalue='')
-    with open('rect.csv', 'w', encoding="ISO-8859-1", newline='') as myfile:
+    with open('./csv/rect.csv', 'w', encoding="ISO-8859-1", newline='') as myfile:
         wr = csv.writer(myfile)
         wr.writerow(("x_data", "y_data", "time"))
         wr.writerows(exp_data)
