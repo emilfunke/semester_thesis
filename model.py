@@ -24,8 +24,9 @@ def get_roi_eyes(image):
     for (x, y, w, h) in face:
         roi_img = img[x: x + w, y: y + h]
         eyes = eye_cascade.detectMultiScale(roi_img, 1.05, 100)
-        if eyes.size != 8:
-            print("fuck")
+        if len(eyes) == 0 or eyes.size != 8:
+            eyes_x_low, eyes_y_low, eyes_x_high, eyes_y_high, eyes_w, eyes_h = 0, 0, 0, 0, 0, 0
+            print("wrong eyes")
         else:
             eyes_x_low = eyes[1][0] if eyes[1][0] < eyes[0][0] else eyes[0][0]
             eyes_y_low = eyes[1][1] if eyes[1][1] < eyes[0][1] else eyes[0][1]
@@ -61,6 +62,30 @@ for i in range(1, 7, 1):
     rect_of["rect" + str(i)] = [f for f in os.listdir(path_img_rect) if f.endswith('.csv')]
     rect_time["rect" + str(i)] = [get_time(path_img_rect + "/" + g) for g in rect_jpg_name["rect" + str(i)]]
 
+circle_time_csv, rect_time_csv = {}, {}
+for i in range(1, 4, 1):
+    circle_time_csv["circle" + str(i)] = pd.read_csv("csv/circle" + str(i) + ".csv", delimiter=',')
+
+for i in range(1, 4, 1):
+    rect_time_csv["rect" + str(i)] = pd.read_csv("csv/rect" + str(i) + ".csv", delimiter=',')
+
+print(circle_time_csv)
+
+df_circle_time_img = pd.DataFrame.from_dict(circle_time, orient='index')
+df_circle_time_img.to_csv('circle_time_img')
+df_rect_time_img = pd.DataFrame.from_dict(rect_time, orient='index')
+df_rect_time_img.to_csv('rect_time_img')
+
+df_circle_time_csv = pd.DataFrame.from_dict(circle_time_csv["circle1"], orient='index')
+df_circle_time_csv.to_csv('circle_time_csv')
+df_rect_time_csv = pd.DataFrame.from_dict(rect_time_csv["rect1"], orient='index')
+df_rect_time_csv.to_csv('rect_time_csv')
+
+
+
+
+'''
+# extracting the rio from each picture and storing in one large dictionary:
 start = datetime.now()
 # get roi_img and roi for all images
 roi_img_all, roi_all = {}, {}
@@ -83,12 +108,8 @@ for i in range(1, 7, 1):
 end = datetime.now()
 print(end - mid + " total time rect")
 print(end - start + " total time all")
-
-df_circle_time = pd.DataFrame(circle_time["circle3"])
-df_circle_time.to_csv('circle_time')
-circle1_csv = pd.read_csv("csv/circle1.csv", delimiter=',')
+'''
 
 # roi_img, roi = get_roi_eyes(path_img_circle + "/" + circle_jpg_name["circle3"][143])
 # show_eyes(roi_img, roi)
 
-print(roi_all)

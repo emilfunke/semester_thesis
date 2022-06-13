@@ -119,6 +119,7 @@ def animate_circle(phi):
     return point,
 
 
+start = datetime.now()
 if mode == "1":
     anim = animation.FuncAnimation(fig, animate_spiral, init_func=init, frames=850, interval=0, blit=True, repeat=False)
 elif mode == "2":
@@ -134,6 +135,8 @@ else:
 manager = plt.get_current_fig_manager()
 manager.window.state('zoomed')
 plt.show()
+end = datetime.now()
+print(end-start)
 
 # https://stackoverflow.com/questions/17704244/writing-python-lists-to-columns-in-csv
 if mode == "1":
