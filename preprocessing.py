@@ -27,7 +27,7 @@ def get_roi_eyes(image):
         eyes = eye_cascade.detectMultiScale(roi_img_ret, 1.05, 100)
         if len(eyes) == 0 or eyes.size != 8:
             eyes_x_low, eyes_y_low, eyes_x_high, eyes_y_high, eyes_w, eyes_h = 0, 0, 0, 0, 0, 0
-            show_bad_img(roi_img_ret)
+            show_bad_img(roi_img_ret, eyes, img)
         else:
             eyes_x_low = eyes[1][0] if eyes[1][0] < eyes[0][0] else eyes[0][0]
             eyes_y_low = eyes[1][1] if eyes[1][1] < eyes[0][1] else eyes[0][1]
@@ -47,8 +47,11 @@ def show_eyes(roi_img, roi):
     return
 
 
-def show_bad_img(image):
-    cv2.imshow('bad image no 2 eyes found', image)
+def show_bad_img(image_roi, eyes, img):
+    for (ex, ey, ew, eh) in eyes:
+        cv2.rectangle(image_roi, [ex, ey], [ex + ew, ey + eh], (0, 255, 0), 5)
+    cv2.imshow('bad image no 2 eyes found in roi', image_roi)
+    cv2.imshow('original picture before face detection', img)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
     return
@@ -65,19 +68,17 @@ def get_all_img_paths(r):
 
 
 def get_all_x_known(r):
-    x = []
     for name in os.listdir(r):
-        if name.endswith("e.csv") or name.endswith("t.csv"):
-            key = name[:len(name) - 4]
-            df_x = pd.read_csv(r + "/" + name)
-            x.setdefault(key, [])
-            x[key].append(df_x.iloc[:, 1])
-    return x
+        if name == "circle.csv":
+            c_x = np.genfromtxt(r + "/" + name, delimiter=',')[1][1:, ]
+        if name == "rect.csv":
+            r_x = np.genfromtxt(r + "/" + name, delimiter=',')
+    return c_x, r_x
 
 
 def get_dict():
     dict_preprocessed = {}
-    for i in range(1, 3, 1):
+    for i in range(1, 4, 1):
         start = datetime.now()
         path_noname = "camera_output/circle" + str(i) + "/"
         for name in os.listdir(path_noname):
@@ -91,18 +92,31 @@ def get_dict():
                 print(path, " done")
         end = datetime.now()
         print("time for circle" + str(i) + " ", end - start)
-        return dict_preprocessed
+    for i in range(1, 7, 1):
+        start = datetime.now()
+        path_noname = "camera_output/rect" + str(i) + "/"
+        for name in os.listdir(path_noname):
+            if name.endswith("jpg"):
+                path = path_noname + name
+                roi_img, roi = get_roi_eyes(path)
+                dict_preprocessed.setdefault(path, [])
+                dict_preprocessed[path].append(roi_img)
+                dict_preprocessed[path].append(roi)
+                dict_preprocessed[path].append(path[:len(path) - 3] + "csv")
+                print(path, " done")
+        end = datetime.now()
+        print("time for rect" + str(i) + " ", end - start)
+    return dict_preprocessed
 
 
 def create_csv():
     df_circle1 = pd.read_csv("csv/circle1.csv")
     df_circle_xy = df_circle1.iloc[:, :2]
-    df_circle_xy.to_csv("csv/circle.csv")
+    df_circle_xy.to_csv("csv/circleab.csv")
     df_circle1 = pd.read_csv("csv/rect1.csv")
     df_circle_xy = df_circle1.iloc[:, :2]
     df_circle_xy.to_csv("csv/rect.csv")
     return
-
 
 '''
 # circle 1-3
@@ -120,8 +134,7 @@ for i in range(1, 7, 1):
     rect_jpg_name[path_img_rect] = [f for f in os.listdir(path_img_rect) if f.endswith('.jpg')]
     rect_of[path_img_rect] = [f for f in os.listdir(path_img_rect) if f.endswith('.csv')]
     rect_time[path_img_rect] = [get_time(path_img_rect + "/" + g) for g in rect_jpg_name["rect" + str(i)]]
-'''
-'''
+
 circle_time_csv, rect_time_csv = {}, {}
 for i in range(1, 4, 1):
     circle_time_csv["circle" + str(i)] = pd.read_csv("csv/circle" + str(i) + ".csv", delimiter=',')
@@ -140,9 +153,7 @@ df_circle_time_csv = pd.DataFrame.from_dict(circle_time_csv["circle1"], orient='
 df_circle_time_csv.to_csv('circle_time_csv')
 df_rect_time_csv = pd.DataFrame.from_dict(rect_time_csv["rect1"], orient='index')
 df_rect_time_csv.to_csv('rect_time_csv')
-'''
 
-'''
 # extracting the rio from each picture and storing in one large dictionary:
 # get roi_img and roi for all images
 roi_img_all, roi_all = {}, {}
@@ -166,12 +177,11 @@ df_roi_all = pd.DataFrame.from_dict(roi_all, orient='index')
 '''
 
 all_img_paths = get_all_img_paths(r="camera_output")
-all_x_known = get_all_x_known(r="csv")
-print(all_x_known)
+circle_x, rect_x = get_all_x_known(r="csv")
+print(circle_x)
 
 l = len(all_img_paths["camera_output\\circle1"])
-c_data = list(all_x_known.items())
-c = np.array(c_data)
-print(c)
-circle = np.array_split(c, l)
+# circle = np.array_split(c, l)
 
+dict_img_roi_optflow = get_dict()
+print(dict_img_roi_optflow)
