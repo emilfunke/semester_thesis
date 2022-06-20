@@ -55,6 +55,18 @@ def get_opt_flow_1_by_1(mode, value):
     return paths
 
 
+def split(arr, n):
+    k, m = divmod(len(arr), n)
+    ret = []
+    l =  list((arr[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n)))
+    for i in range(n):
+        tot = 0
+        for j in range(len(l[i])):
+            tot += l[i][j]
+        ret.append(tot/len(l[i]))
+    return ret
+
+
 def get_paths_1_by_1(mode, value):
     paths = []
     if mode == 1:
@@ -71,22 +83,9 @@ def get_paths_1_by_1(mode, value):
 
 
 def mapping(paths, x, y):
-    len_paths = len(paths)
-    len_coor = len(x)
-    r = math.floor(len_coor / len_paths)
-    # m = len_coor % len_paths
     mapped = []
-    for i in range(len_paths):
-        # tot_x, tot_y = 0, 0
-        # for j in range(r):
-        # tot_x += x[i * r + j]
-        # tot_y += y[i * r + j]
-        # v_x = tot_x / r
-        # v_y = tot_y / r
-        if 2*r*i < len(x):
-            v_x = x[2*r*i]
-            v_y = y[2*r*i]
-        pair = [paths[i], v_x, v_y]
+    for i in range(len(paths)):
+        pair = [paths[i], x[i], y[i]]
         mapped.append(pair)
     return mapped
 
@@ -139,6 +138,9 @@ def merge1(track_i):
     for i in range(len(track_i)):
         path_img = track_i[i][0]
         face_img, face_img_coor, roi_eyes = get_face_roi(path_img)
+        if roi_eyes[0] == 9500:
+            face_img_coor = merged[i-1][3]
+            roi_eyes = merged[i-1][4]
         # merged[i].append(face_img)
         merged[i].append(face_img_coor)
         merged[i].append(roi_eyes)
@@ -155,14 +157,22 @@ def merge2(track, opt_flow):
 
 total = []
 for a in range(1, 4, 1):
-    circle = mapping(get_paths_1_by_1(1, a), get_x_y(1)[0], get_x_y(1)[1])
+    x_old, y_old = get_x_y(1)
+    paths = get_paths_1_by_1(1, a)
+    x = split(x_old, len(paths))
+    y = split(y_old, len(paths))
+    circle = mapping(paths, x, y)
     circle = merge1(circle)
     opt = get_opt_flow_1_by_1(1, a)
     circle = merge2(circle, opt)
     for b in range(len(circle)):
         total.append(circle[b])
 for c in range(1, 7, 1):
-    rect = mapping(get_paths_1_by_1(2, c), get_x_y(2)[0], get_x_y(2)[1])
+    x_old, y_old = get_x_y(2)
+    paths = get_paths_1_by_1(2, c)
+    x = split(x_old, len(paths))
+    y = split(y_old, len(paths))
+    rect = mapping(paths, x, y)
     rect = merge1(rect)
     opt = get_opt_flow_1_by_1(2, c)
     rect = merge2(rect, opt)

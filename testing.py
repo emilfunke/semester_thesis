@@ -1,49 +1,52 @@
-import math
-import cv2
+import os
+import pandas as pd
 
-img_path = "camera_output/circle1/000049_fc_155_processed.jpg"
 
-img = cv2.imread(img_path)
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
-eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
-face = face_cascade.detectMultiScale(img, 1.05, 4)
-for (x, y, w, h) in face:
-    x *= 0.75
-    y *= 0.75
-    w *= 1.25
-    h *= 1.25
-    x = int(x)
-    y = int(y)
-    w = int(w)
-    h = int(h)
-    face_img = img[x: x + w, y: y + h]
-    face_img_coor = [x, y, w, h]
-    eyes = eye_cascade.detectMultiScale(face_img, 1.05, 100)
-    x_low, x_high, y_low, y_high, e_w, e_h = 10000, 0, 10000, 0, 0, 0
-    for (ex, ey, ew, eh) in eyes:
-        if ex < x_low:
-            x_low = ex
-        if ex > x_high:
-            x_high = ex
-        if ey < y_low:
-            y_low = ey
-        if ey > y_high:
-            y_high = ey
-        if ew > e_w:
-            e_w = ew
-        if eh > e_h:
-            e_h = ew
-        x_low = math.floor(x_low*0.95)
-        x_high = math.floor(x_high*1.05)
-        y_low = math.floor(y_low*0.95)
-        y_high = math.floor(y_high*1.05)
-        e_w = math.floor(e_w*1.05)
-        e_h = math.floor(e_h*1.05)
+def split(a, n):
+    k, m = divmod(len(a), n)
+    return (a[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n))
 
-    roi_eyes = [x_low, x_high, y_low, y_high, e_w, e_h]
-    cv2.rectangle(face_img, [roi_eyes[0], roi_eyes[2]], [roi_eyes[1] + roi_eyes[4], roi_eyes[3] + roi_eyes[5]], (0, 0, 255), 1)
 
-cv2.imshow('face', face_img)
-cv2.imshow('img', img)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+def get_x_y(mode):
+    if mode == 1:
+        circle1 = pd.read_csv("csv/circle1.csv")
+        circle_x = circle1['x_data']
+        circle_y = circle1['y_data']
+        x_arr = circle_x.to_numpy()
+        y_arr = circle_y.to_numpy()
+    if mode == 2:
+        rect1 = pd.read_csv("csv/rect1.csv")
+        rect_x = rect1['x_data']
+        rect_y = rect1['y_data']
+        x_arr = rect_x.to_numpy()
+        y_arr = rect_y.to_numpy()
+    return x_arr, y_arr
+
+
+def get_paths_1_by_1(mode, value):
+    paths = []
+    if mode == 1:
+        path = "camera_output/circle" + str(value) + "/"
+        for name in os.listdir(path):
+            if name.endswith("jpg"):
+                paths.append(path + name)
+    if mode == 2:
+        path = "camera_output/rect" + str(value) + "/"
+        for name in os.listdir(path):
+            if name.endswith("jpg"):
+                paths.append(path + name)
+    return paths
+
+
+circle1 = get_paths_1_by_1(1, 1)
+x_split, y_split = get_x_y(1)
+
+x_split = list(split(x_split, len(circle1)))
+x = []
+for i in range(len(x_split)):
+    tot = 0
+    for j in range(len(x_split[i])):
+        tot += x_split[i][j]
+    x.append(int(tot / len(x_split[i])))
+
+print(x, len(x))
