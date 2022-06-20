@@ -15,6 +15,10 @@ def get_time(path_img):
     return time
 
 
+# if more than 2 eyes found, then still take ROI from top left to bottom right since mostly fits
+# if 0 eyes found take the picture out
+# if 1 eye found ask for what to do
+# rect 2 for good visualization
 def get_roi_eyes(image):
     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
     eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
@@ -78,7 +82,7 @@ def get_all_x_known(r):
 
 def get_dict():
     dict_preprocessed = {}
-    for i in range(1, 4, 1):
+    for i in range(4, 4, 1):
         start = datetime.now()
         path_noname = "camera_output/circle" + str(i) + "/"
         for name in os.listdir(path_noname):
@@ -92,7 +96,7 @@ def get_dict():
                 print(path, " done")
         end = datetime.now()
         print("time for circle" + str(i) + " ", end - start)
-    for i in range(1, 7, 1):
+    for i in range(2, 7, 1):
         start = datetime.now()
         path_noname = "camera_output/rect" + str(i) + "/"
         for name in os.listdir(path_noname):
@@ -112,11 +116,12 @@ def get_dict():
 def create_csv():
     df_circle1 = pd.read_csv("csv/circle1.csv")
     df_circle_xy = df_circle1.iloc[:, :2]
-    df_circle_xy.to_csv("csv/circleab.csv")
+    df_circle_xy.to_csv("csv/circle.csv")
     df_circle1 = pd.read_csv("csv/rect1.csv")
     df_circle_xy = df_circle1.iloc[:, :2]
     df_circle_xy.to_csv("csv/rect.csv")
     return
+
 
 '''
 # circle 1-3

@@ -4,7 +4,9 @@ import cv2
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 eye_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_eye.xml')
 
-img = cv2.imread("camera_output/circle3/000047_fc_153_processed.jpg", 0)
+img = cv2.imread("camera_output/circle3/000047_fc_153_processed.jpg")
+
+
 face = face_cascade.detectMultiScale(img, 1.05, 4)
 
 for (x, y, w, h) in face:
@@ -27,6 +29,6 @@ for (x, y, w, h) in face:
     cv2.rectangle(roi_img, [roi[0], roi[1]], [roi[2]+roi[4], roi[3]+roi[5]], (0, 0, 255), 1)
 
 cv2.imshow('roi_img', roi_img)
-#cv2.imshow('img', img)
+cv2.imshow('img', img)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
