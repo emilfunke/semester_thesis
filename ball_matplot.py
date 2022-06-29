@@ -7,13 +7,18 @@ import time
 from datetime import datetime
 import csv
 from itertools import zip_longest
+import subprocess
+
+
+file_ex = "S6G3_SDK_opencv.exe"
+path_ex = "C:/st_camera/S6G3_SDK-v1.0.0/Build/Release/"
 
 matplotlib.use('TkAgg')
 
 for m in get_monitors():
     height = m.height
     width = m.width
-wait = 3
+wait = 0
 mode = input("Please give either 1, 2 or 3: ")
 
 fig = plt.figure()
@@ -119,7 +124,9 @@ def animate_circle(phi):
     return point,
 
 
+
 start = datetime.now()
+p = subprocess.Popen([path_ex + file_ex], cwd=path_ex)
 if mode == "1":
     anim = animation.FuncAnimation(fig, animate_spiral, init_func=init, frames=850, interval=0, blit=True, repeat=False)
 elif mode == "2":
@@ -127,6 +134,7 @@ elif mode == "2":
     anim = animation.FuncAnimation(fig, animate_rect, init_func=init, frames=len(x_data) + 1, interval=10, blit=True,
                                    repeat=False)
 elif mode == "3":
+    time.sleep(2)
     anim = animation.FuncAnimation(fig, animate_circle, interval=0, blit=True, repeat=False,
                                    frames=np.linspace(0, 4 * np.pi + 1, 1440, endpoint=False))
 else:
@@ -151,7 +159,7 @@ if mode == "1":
 if mode == "2":
     temp = [x_data, y_data, time_data]
     exp_data = zip_longest(*temp, fillvalue='')
-    with open('./csv/rect.csv', 'w', encoding="ISO-8859-1", newline='') as myfile:
+    with open('./csv/rect_raw.csv', 'w', encoding="ISO-8859-1", newline='') as myfile:
         wr = csv.writer(myfile)
         wr.writerow(("x_data", "y_data", "time"))
         wr.writerows(exp_data)
@@ -160,7 +168,7 @@ if mode == "2":
 if mode == "3":
     temp = [x_data, y_data, time_data]
     exp_data = zip_longest(*temp, fillvalue='')
-    with open('circle.csv', 'w', encoding="ISO-8859-1", newline='') as myfile:
+    with open('circle_raw.csv', 'w', encoding="ISO-8859-1", newline='') as myfile:
         wr = csv.writer(myfile)
         wr.writerow(("x_data", "y_data", "time"))
         wr.writerows(exp_data)
