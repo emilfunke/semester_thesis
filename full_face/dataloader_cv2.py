@@ -14,6 +14,7 @@ import torch.optim as optim
 import cv2
 import time
 from tqdm import tqdm
+from sklearn.model_selection import train_test_split
 
 
 class GazeEstimationDataset(Dataset):
@@ -214,7 +215,7 @@ for i in range(870, 871, 1):
 
 transformed_dataset = GazeEstimationDataset(csv_file="full_face/total.csv", root_dir="",
                                             transform=transforms.Compose([Rescale(256), ToTensor()]))
-
+#print(transformed_dataset[0])
 '''
 scale = Rescale(256)
 # crop = RandomCrop(1024)
@@ -230,8 +231,12 @@ for i, tsfrm in enumerate([scale]):
     plt.show()
 '''
 # print(transformed_dataset.__getitem__(1))
+print("start splitting at: ", time.localtime())
+train, test = train_test_split(transformed_dataset)
+print("splitting done")
+
 batch_size = 20
-dataloader = DataLoader(transformed_dataset, batch_size=batch_size, shuffle=True, num_workers=0)
+dataloader = DataLoader(train, batch_size=batch_size, shuffle=True, num_workers=0)
 
 '''
 for i_batch, sample_batched in enumerate(dataloader):
@@ -249,7 +254,7 @@ net = net.double()
 criterion = nn.MSELoss()
 optimizer = optim.Adam(net.parameters(), lr=0.001)
 
-n = 5
+n = 7
 for epoch in range(n):
     with tqdm(dataloader, unit="batch") as tepoch:
         running_loss = 0.0
@@ -271,7 +276,7 @@ for epoch in range(n):
             correct = (abs(output - labels)).sum().item()
             accuracy = correct / batch_size
 
-            tepoch.set_postfix(loss=loss.item(), accuracy=100*accuracy)
+            tepoch.set_postfix(loss=loss.item(), accuracy=100-accuracy)
             time.sleep(0.1)
 
             """
@@ -287,3 +292,15 @@ for epoch in range(n):
 print('done')
 path = '../trained.pth'
 torch.save(net.state_dict(), path)
+
+correct = 0
+total = 0
+
+with torch.no_grad():
+    for data in test:
+        image, labels = data
+        output = net(image)
+        _, predicted = torch.max(output.data, 1)
+        total += 1
+        correct += abs(predicted-labels)
+print('overall ', correct/total)
