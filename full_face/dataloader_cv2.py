@@ -296,6 +296,8 @@ torch.save(net.state_dict(), path)
 correct = 0
 total = 0
 
+net.load_state_dict(torch.load(path))
+
 with torch.no_grad():
     for data in test:
         image, labels = data
