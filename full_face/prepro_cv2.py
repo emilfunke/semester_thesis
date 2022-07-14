@@ -51,7 +51,7 @@ def get_opt_flow_1_by_1(mode, value):
         path = "camera_output/circle" + str(value) + "/"
         for name in os.listdir(path):
             if name.endswith("csv"):
-                paths.append(path + name)
+                paths.append(path + name, opt)
     if mode == 2:
         path = "camera_output/rect" + str(value) + "/"
         for name in os.listdir(path):
@@ -63,7 +63,7 @@ def get_opt_flow_1_by_1(mode, value):
 def split(arr, n):
     k, m = divmod(len(arr), n)
     ret = []
-    l =  list((arr[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n)))
+    l = list((arr[i * k + min(i, m):(i + 1) * k + min(i + 1, m)] for i in range(n)))
     for i in range(n):
         tot = 0
         for j in range(len(l[i])):
@@ -192,3 +192,5 @@ for c in range(1, 7, 1):
 with open("total.csv", "w") as f:
     writer = csv.writer(f)
     writer.writerows(total)
+
+

@@ -126,7 +126,7 @@ def animate_circle(phi):
 
 
 start = datetime.now()
-p = subprocess.Popen([path_ex + file_ex], cwd=path_ex)
+#p = subprocess.Popen([path_ex + file_ex], cwd=path_ex)
 if mode == "1":
     anim = animation.FuncAnimation(fig, animate_spiral, init_func=init, frames=850, interval=0, blit=True, repeat=False)
 elif mode == "2":
